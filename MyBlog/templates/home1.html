@@ -1,0 +1,68 @@
+<br>----- 字符输出  -----  </br>
+{{ string1 }}
+<br>  </br>
+<br>----- 列表输出  -----  </br>
+教程列表：
+{% for i in list1 %}
+{{ i }}
+{% endfor %}
+<br>  </br>
+<br>----- 字典输出  -----  </br>
+<br>第一种字典遍历  </br>
+站点：{{ dict.site }} 内容：{{ dict.content }}
+<br>  </br>
+<br>第二种字典遍历  </br>
+{% for key, value in dict.items %}
+    {{ key }}: {{ value }}
+{% endfor %}
+<br>  </br>
+<br>list拼接','</br>
+{% for item in list2 %}
+	{{item}}{% if not forloop.last %},{% endif %}
+{% endfor %}
+<br>   </br>
+<br>list为空</br>
+<ul>
+{% for athlete in athlete_list %}
+    <li>{{ athlete.name }}</li>
+{% empty %}
+    <li>抱歉，列表为空</li>
+{% endfor %}
+</ul>
+<br>  </br>
+{% if var >= 90 %}
+成绩优秀，自强学堂你没少去吧！学得不错
+{% elif var >= 80 %}
+成绩良好
+{% elif var >= 70 %}
+成绩一般
+{% elif var >= 60 %}
+需要努力
+{% else %}
+不及格啊，大哥！多去自强学堂学习啊！
+{% endif %}
+<br>  </br>
+{% if num <= 100 and num >= 0 %}
+num在0到100之间
+{% else %}
+数值不在范围之内！
+{% endif %}
+<br>  </br>
+{% if 'python' in list1 %}
+python在名单中
+{% endif %}
+<br> </br>
+<br>获取登录用户名</br>
+{{ request.user }}
+<br> </br>
+<br>获取当前网址</br>
+{{ request.path }}
+<br>  </br>
+<br>当前get参数</br>
+<a href="{{ request.path }}?{{ request.GET.urlencode }}&delete=1">当前网址加参数 delete</a>
+<br>  </br>
+{% if request.user.is_authenticated %}
+    {{ request.user.username }}，您好！
+{% else %}
+    请登陆，这里放登陆链接
+{% endif %}
