@@ -92,6 +92,7 @@ git config --global user.email "1107273806@qq.com"
 ssh-keygen -t rsa -C "1107273806@qq.com"
 
 git提交忽略密码
+创建文件 .git-credentials 加入https://{username}:{password}@github.com
 git config --global credential.helper store
 
 git从远程克隆项目
@@ -100,4 +101,3 @@ git clone 地址
 cmd下建文件
 echo a>.git-credentials
 
-...
