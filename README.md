@@ -95,5 +95,7 @@ git提交忽略密码
 git config --global credential.helper store
 
 git从远程克隆项目
-
 git clone 地址
+
+cmd下建文件
+echo a>.git-credentials
