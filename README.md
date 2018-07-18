@@ -99,3 +99,5 @@ git clone 地址
 
 cmd下建文件
 echo a>.git-credentials
+
+...
