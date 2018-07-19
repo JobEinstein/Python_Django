@@ -93,3 +93,6 @@ ssh-keygen -t rsa -C "1107273806@qq.com"
 
 git提交忽略密码
 git config --global credential.helper store1
+
+
+
