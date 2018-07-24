@@ -24,6 +24,7 @@ forloop.parentloop		用在嵌套的 for 循环中，
 )
 同步数据库 python manage.py makemigrations python manage.py migrate
 启动服务  python manage.py runserver 
+指定端口 python manage.py runserver 8001
 
 打印sql执行语句
   settings.py 尾部加上
