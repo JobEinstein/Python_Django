@@ -145,8 +145,11 @@ pickle序列化:
   # 2. 使用 order_by，在栏目名（column name）前加一个负号
   表名.objects.order_by('-表字段')[:20] # 表字段最大的20条
 
+数据导入:
+  脚本放在项目目录下
+
 QuerySet 进阶:
- 
+  
  
 
 
