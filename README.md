@@ -149,8 +149,77 @@ pickle序列化:
   脚本放在项目目录下
 
 QuerySet 进阶:
-  
- 
+  values_list 获取元组形式结果
+    1.authors = Author.objects.values_list('name', 'qq') #获取作者的 name 和 qq
+    2.authors = Author.objects.values_list('name', flat=True) #只需要 1 个字段，可以指定 flat=True
+    3.list(Author.objects.values_list('name', flat=True))
+  values 获取字典形式的结果
+    1.authors = Author.objects.values('name', 'qq') #获取作者的 name 和 qq
+    2.authors = Author.objects.values_list('name', flat=True) #只需要 1 个字段，可以指定 flat=True
+    3.list(Author.objects.values('name', 'qq'))
+  注意：
+    1. values_list 和 values 返回的并不是真正的 列表 或 字典，也是 queryset，他们也是 lazy evaluation 的（惰性评估，通俗地说，就是用的时候才真正的去数据库查）
+    2. 如果查询后没有使用，在数据库更新后再使用，你发现得到在是新内容！！！如果想要旧内容保持着，数据库更新后不要变，可以 list 一下
+    3. 如果只是遍历这些结果，没有必要 list 它们转成列表（浪费内存，数据量大的时候要更谨慎！！！）
+  extra 实现 别名，条件，排序等
+    extra 中可实现别名，条件，排序等，后面两个用 filter, exclude 一般都能实现，排序用 order_by 也能实现
+    为了执行SELECT name AS tag_name FROM blog_tag;
+      tags = Tag.objects.all().extra(select={'tag_name': 'name'})
+      tags[0].name
+      tags[0].tag_name
+      Tag.objects.all().extra(select={'tag_name': 'name'}).query.__str__() #打印执行sql
+      Tag.objects.all().extra(select={'tag_name': 'name'}).defer('name').query.__str__() #defer 排除掉原来的 name
+  annotate 聚合 计数，求和，平均数等
+    1.计数
+      from django.db.models import Count
+      1.计算一下每个作者的文章数    
+        Article.objects.all().values('author_id').annotate(count=Count('author')).values('author_id', 'count')
+      2.获取作者的名称及作者的文章数
+        Article.objects.all().values('author__name').annotate(count=Count('author')).values('author__name', 'count')
+    2.求和与平均值
+      from django.db.models import Avg
+      1.求一个作者的所有文章的得分(score)平均值
+        Article.objects.values('author_id').annotate(avg_score=Avg('score')).values('author_id', 'avg_score')
+      from django.db.models import Sum
+      2.求一个作者所有文章的总分
+        Article.objects.values('author__name').annotate(sum_score=Sum('score')).values('author__name', 'sum_score')
+  select_related 优化一对一,多对一查询
+      select_related 是使用 SQL JOIN 一次性取出相关的内容
+      联表查询:一篇文章只能有一个作者,一个作者可以有多篇文章
+        articles = Article.objects.all().select_related('author')[:10]
+        a1 = articles[0]
+        a1.title
+        a1.author.name
+  prefetch_related 优化一对多,多对多查询
+      prefetch_related是通过再执行一条额外的SQL语句，然后用Python把两次SQL查询的内容关联（joining)到一起
+      查询文章的同时，查询文章对应的标签。“文章”与“标签”是多对多的关系
+        articles = Article.objects.all().prefetch_related('tags')[:10]
+        print(articles)
+      不用prefetch_related时
+        articles = Article.objects.all()[:3]
+        for a in articles:
+          print a.title, a.tags.all()
+      用prefetch_related时
+        articles = Article.objects.all().prefetch_related('tags')[:3]
+        for a in articles:
+          print a.title, a.tags.all()
+  defer 排除不需要的字段
+      在文章列表页，只需要文章的标题和作者，没有必要把文章的内容也获取出来
+        Article.objects.all()
+        Article.objects.all().defer('content') #没有查content字段
+  only 仅选择需要的字段
+      和defer相反,only 用于取出需要的字段,假如我们只需要查出作者的名称
+        Author.objects.all().only('name')
+  自定义聚合功能
+      django.db.models中有 Count,Avg,Sum等，但是有一些没有的,比如GROUP_CONCAT,它用来聚合时将符合某分组条件(group by)的不同的值,连到一起,作为整体返回 
+        GROUP_CONCAT实现
+          1.新建一个文件比如my_aggregate.py
+          2.引入my_aggregate.py中的GroupConcat类
+          3.level,info聚到一起,按时间和发生次数倒序排列,并含有每次日志发生的时间
+            ErrorLogModel.objects.values('level','info').annotate(count=Count(1), time=GroupConcat('time',ordering='time DESC', separator='|')).order_by('-time','-count')
+          
+自定义Field
+
 
 
 git建ssh密钥
